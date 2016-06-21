@@ -44,7 +44,7 @@ try {
     $phar = new \Phar($phar, 0, $name);
     //$phar->compressFiles(\Phar::NONE);
 
-    DirectoryFilterIterator::exclude(array('compiler.php', 'eurekon.phar', 'Jenkins', 'Tests'));
+    DirectoryFilterIterator::exclude(array('compiler.php', 'eurekon.phar', 'Tests', 'DirectoryFilterIterator.php', 'composer.json'));
     $dirIterator  = new \RecursiveDirectoryIterator($from, \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::SKIP_DOTS);
     $fDirIterator = new DirectoryFilterIterator($dirIterator);
     $iIterator    = new \RecursiveIteratorIterator($fDirIterator);

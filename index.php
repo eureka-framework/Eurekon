@@ -16,6 +16,8 @@ require_once 'Help.php';
 require_once 'Out.php';
 require_once 'Progress.php';
 require_once 'Style.php';
+require_once 'ConsoleInterface.php';
+require_once 'Console.php';
 
 try {
 
