@@ -1,7 +1,7 @@
 <?php
 
-/**
- * Copyright (c) 2010-2016 Romain Cottard
+/*
+ * Copyright (c) Romain Cottard
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,9 +13,8 @@ namespace Eureka\Eurekon;
  * Interface for console script launched by Eurekon console.
  *
  * @author  Romain Cottard
- * @version 3.0.0
  */
-interface ConsoleInterface
+interface ScriptInterface
 {
     /**
      * Check if script is executable.
@@ -23,6 +22,13 @@ interface ConsoleInterface
      * @return bool
      */
     public function executable();
+
+    /**
+     * Get description of the script
+     *
+     * @return string
+     */
+    public function getDescription();
 
     /**
      * Display help

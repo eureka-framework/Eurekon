@@ -1,7 +1,7 @@
 <?php
 
-/**
- * Copyright (c) 2010-2016 Romain Cottard
+/*
+ * Copyright (c) Romain Cottard
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -9,11 +9,11 @@
 
 namespace Eureka\Eurekon;
 
-require_once 'Argument.php';
-require_once 'ArgumentIterator.php';
-require_once 'Help.php';
-require_once 'Style.php';
-require_once 'DirectoryFilterIterator.php';
+require_once __DIR__ . '/../src/Argument/Argument.php';
+require_once __DIR__ . '/../src/Argument/ArgumentIterator.php';
+require_once __DIR__ . '/../src/Help.php';
+require_once __DIR__ . '/../src/Style/Style.php';
+require_once __DIR__ . '/Utils/DirectoryFilterIterator.php';
 
 $argument = Argument::getInstance();
 $argument->parse(isset($argv) ? $argv : array());
