@@ -29,7 +29,7 @@ class Console
     /** @var boolean $isVerbose Set true to display header/footer script message (name, time...) */
     protected $isVerbose = true;
 
-    /** @var Argument $argument Argument object */
+    /** @var Argument\Argument $argument Argument object */
     protected $argument = null;
 
     /** @var \Psr\Container\ContainerInterface */
@@ -46,11 +46,16 @@ class Console
      *
      * @param array $args List of arguments for current script to execute.
      * @param \Psr\Container\ContainerInterface $container
+     * @param \Psr\Log\LoggerInterface $logger
      */
-    public function __construct(array $args, ContainerInterface $container)
+    public function __construct(array $args, ContainerInterface $container = null, LoggerInterface $logger = null)
     {
         $this->argument  = Argument\Argument::getInstance()->parse($args);
         $this->container = $container;
+
+        if ($logger !== null) {
+            $this->setLogger($logger);
+        }
     }
 
     /**
@@ -85,7 +90,7 @@ class Console
         IO\Out::std($style->colorForeground(Style\Color::GREEN)->get());
         IO\Out::std('');
 
-        $help = new Help('...', true);
+        $help = new Help('...');
         $help->addArgument('', 'color', 'Activate colors (do not activate when redirect output in log file, colors are non-printable chars)', false, false);
         $help->addArgument('', 'debug', 'Activate debug mode (trace on exception if script is terminated with an exception)', false, false);
         $help->addArgument('', 'time-limit', 'Specified time limit in seconds (default: 0 - unlimited)', true, false);

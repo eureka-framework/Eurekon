@@ -49,18 +49,25 @@ abstract class AbstractScript implements ScriptInterface
 
     /**
      * @param  \Psr\Container\ContainerInterface $container
-     * @return void
-     * @throws
+     * @return $this
      */
-    public function setContainer(ContainerInterface $container)
+    public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
 
+        if ($container === null) {
+            return $this;
+        }
+
         try {
             $this->config = $this->container->get('config');
-        } catch (\Exception $exception) {
+        } catch (\Psr\Container\NotFoundExceptionInterface $exception) {
+            $this->config = null;
+        } catch (\Psr\Container\ContainerExceptionInterface $exception) {
             $this->config = null;
         }
+
+        return $this;
     }
 
     /**
