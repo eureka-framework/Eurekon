@@ -111,11 +111,11 @@ abstract class AbstractScript implements ScriptInterface
     }
 
     /**
-     * @return \Eureka\Component\Config\Config|null
+     * @return \Eureka\Component\Config\Config
      */
     public function getConfig()
     {
-        return $this->config;
+        return $this->container->get('config');
     }
 
     /**
