@@ -9,7 +9,7 @@
 
 namespace Eureka\Eurekon;
 
-use Psr\Container\ContainerInterface;
+use Psr\Container;
 
 /**
  * Console Abstraction class.
@@ -51,7 +51,7 @@ abstract class AbstractScript implements ScriptInterface
      * @param  \Psr\Container\ContainerInterface $container
      * @return $this
      */
-    public function setContainer(ContainerInterface $container = null)
+    public function setContainer(Container\ContainerInterface $container = null)
     {
         $this->container = $container;
 
@@ -61,9 +61,9 @@ abstract class AbstractScript implements ScriptInterface
 
         try {
             $this->config = $this->container->get('config');
-        } catch (\Psr\Container\NotFoundExceptionInterface $exception) {
+        } catch (Container\NotFoundExceptionInterface $exception) {
             $this->config = null;
-        } catch (\Psr\Container\ContainerExceptionInterface $exception) {
+        } catch (Container\ContainerExceptionInterface $exception) {
             $this->config = null;
         }
 
@@ -111,7 +111,8 @@ abstract class AbstractScript implements ScriptInterface
     }
 
     /**
-     * @return \Eureka\Component\Config\Config
+     * @return \Psr\Container\ContainerInterface
+     * @throws
      */
     public function getConfig()
     {
