@@ -10,161 +10,142 @@
 namespace Eureka\Eurekon\Table;
 
 use Eureka\Eurekon\Style\Style;
-use Eureka\Eurekon\Style\Color;
-use Eureka\Eurekon\IO\Out;
 
-/**
- * Render table in console mode.
- *
- * @author Romain Cottard
- */
 class Table
 {
-    /** @var int[] $columnsSize */
-    protected $columnsSize = [];
+    /** @var Row[] $rows */
+    private $rows = [];
 
-    /** @var string[][] $lines Columns contents */
-    protected $lines = [];
+    /** @var Column[]  */
+    private $columns = [];
 
     /**
-     * Class constructor
+     * Table constructor.
      *
-     * @param  int[] List of size by columns.
+     * @param array $columns
      */
-    public function __construct($columns = [])
+    public function __construct(array $columns)
     {
-        if (!empty($columns)) {
-            foreach ($columns as $size) {
-                $this->addColumn((int) $size);
-            }
-        }
+        $this->columns = $columns;
+        $this->rows = [];
+
+        $this->createHeader();
     }
 
     /**
-     * Add new column to the array
-     *
-     * @param  int $size
+     * @param int $index
+     * @return Column
+     */
+    public function getColumn(int $index): Column
+    {
+        return $this->columns[$index];
+    }
+
+    /**
      * @return $this
      */
-    public function addColumn($size)
+    public function createHeader(): self
     {
-        $this->columnsSize[] = $size;
+        $cells = [];
+
+        $this->addBar();
+        foreach ($this->columns as $column) {
+            $cells[] = new Cell($column->getName(), $column->getSize(), $column->getAlign());
+        }
+
+        $this->add(new Row($cells, true));
+        $this->addBar();
 
         return $this;
     }
 
     /**
-     * Line content.
-     *
-     * @param  Cell[] $line
-     * @param  Style  $lineStyle
-     * @return $this
+     * @param  Row $row
+     * @return Table
      */
-    public function addLine($line, Style $lineStyle = null)
+    public function add(Row $row): self
     {
-        if (!($lineStyle instanceof Style)) {
-            $lineStyle = (new Style())->colorForeground(Color::WHITE)->bold();
-        }
-
-        foreach ($this->columnsSize as $index => $size) {
-            $cell = $line[$index];
-
-            //~ Override cell content if necessary.
-            if (!($cell->getStyle() instanceof Style)) {
-                $cell->setStyle(clone $lineStyle);
-            }
-
-            $line[$index] = $cell->render($size);
-        }
-        $this->lines[] = $line;
+        $this->rows[] = $row;
 
         return $this;
     }
 
     /**
-     * Line content.
-     *
-     * @param  Cell[] $line
-     * @param  bool   $hasLineBar
-     * @param  Style  $lineStyle
-     * @return $this
+     * @param array $data
+     * @param bool $isHeader
+     * @param Style|null $style
+     * @return Table
      */
-    public function addLineHeader($line, $hasLineBar = true, Style $lineStyle = null)
+    public function addRow(array $data, bool $isHeader = false, Style $style = null): self
     {
-        if ($hasLineBar) {
-            $this->addLineBar();
+        $cells = [];
+
+        if ($isHeader) {
+            $this->addBar();
         }
 
-        if (!($lineStyle instanceof Style)) {
-            $lineStyle = (new Style())->colorForeground(Color::GREEN)->bold();
+        foreach ($data as $index => $value) {
+            $column = $this->getColumn($index);
+            $cells[] = new Cell($value, $column->getSize(), $column->getAlign());
         }
 
-        foreach ($this->columnsSize as $index => $size) {
-            $cell = $line[$index];
+        $this->rows[] = new Row($cells, $isHeader, false, $style);
 
-            //~ Override cell content if necessary.
-            if (!($cell->getStyle() instanceof Style)) {
-                $cell->setStyle(clone $lineStyle);
-            }
-
-            $line[$index] = $cell->render($size);
-        }
-
-        $this->lines[] = $line;
-
-        if ($hasLineBar) {
-            $this->addLineBar();
+        if ($isHeader) {
+            $this->addBar();
         }
 
         return $this;
     }
 
     /**
-     * Line content.
-     *
-     * @return $this
+     * @param array $data
+     * @param bool $isHeader
+     * @return Table
      */
-    public function addLineBar()
+    public function addRowSpan(array $data, bool $isHeader = false): self
     {
-        $line = [];
-        foreach ($this->columnsSize as $index => $size) {
-            $line[$index] = new Cell(str_pad('-', $size, '-'));
+        if ($isHeader) {
+            $this->addBar();
         }
 
-        return $this->addLine($line);
+        $size = count($this->columns) - 1;
+        foreach ($this->columns as $column) {
+            $size += $column->getSize();
+        }
+        $this->rows[] = new Row([new Cell(implode(' - ', $data), $size, Cell::ALIGN_CENTER)], $isHeader);
+
+
+        if ($isHeader) {
+            $this->addBar();
+        }
+
+        return $this;
     }
 
     /**
-     * Line content.
-     *
-     * @return $this
+     * @return Table
      */
-    public function addEmptyLine()
+    public function addBar(): self
     {
-        $line = [];
-        for ($index = 0, $max = count($this->columnsSize); $index < $max; $index++) {
-            $line[$index] = new Cell(' ');
+        $cells = [];
+        foreach ($this->columns as $column) {
+            $cells[] = new Cell(str_pad('', $column->getSize(), '-'), $column->getSize(), false, false);
         }
+        $this->rows[] = new Row($cells, false, true);
 
-        return $this->addLine($line);
+        return $this;
     }
 
     /**
-     * Render
-     *
-     * @return $this
+     * @return Table
      */
-    public function render()
+    public function display(): self
     {
-        $this->addLineBar();
+        $this->addBar();
 
-        foreach ($this->lines as $line) {
-            Out::std('|', '');
-            foreach ($line as $cell) {
-                Out::std($cell . '|', '');
-            }
-
-            Out::std('');
+        foreach ($this->rows as $row) {
+            echo (string) $row;
         }
 
         return $this;

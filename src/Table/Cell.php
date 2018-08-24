@@ -9,96 +9,60 @@
 
 namespace Eureka\Eurekon\Table;
 
-use Eureka\Eurekon\Style\Style;
-
 /**
- * Cell entity class for Table class.
+ * Class Cell
  *
  * @author Romain Cottard
  */
 class Cell
 {
-    /** @var string $text */
-    protected $text = '';
+    const ALIGN_CENTER = STR_PAD_BOTH;
+    const ALIGN_LEFT   = STR_PAD_RIGHT;
+    const ALIGN_RIGHT  = STR_PAD_LEFT;
 
-    /** @var Style $style */
-    protected $style = null;
+    /** @var string  */
+    private $content = '';
+
+    /** @var int  */
+    private $size = 10;
+
+    /** @var int  */
+    private $align = Cell::ALIGN_CENTER;
+
+    /** @var bool $paddingSpace */
+    private $paddingSpace;
 
     /**
-     * Class constructor
+     * Cell constructor.
      *
-     * @param string $text
-     * @param Style  $style
+     * @param string $content
+     * @param int $size
+     * @param int $align
+     * @param bool $paddingSpace
      */
-    public function __construct($text, Style $style = null)
+    public function __construct(string $content, int $size = 13, int $align = Cell::ALIGN_CENTER, bool $paddingSpace = true)
     {
-        $this->setText($text);
-        $this->setStyle($style);
+        $this->content      = $content;
+        $this->size         = $size;
+        $this->align        = $align;
+        $this->paddingSpace = $paddingSpace;
     }
 
     /**
-     * Get text.
-     *
      * @return string
      */
-    public function getText()
+    public function render(): string
     {
-        return $this->text;
+        $content = $this->paddingSpace ? ' ' . $this->content . ' ' : $this->content;
+
+        return (string) str_pad($content, $this->size, ' ', $this->align);
+
     }
 
     /**
-     * Set text.
-     *
-     * @param  string $text
-     * @return $this
-     */
-    public function setText($text)
-    {
-        $this->text = (string) $text;
-
-        return $this;
-    }
-
-    /**
-     * Get Style
-     *
-     * @return Style
-     */
-    public function getStyle()
-    {
-        return $this->style;
-    }
-
-    /**
-     * Set style.
-     *
-     * @param  Style $style
-     * @return $this
-     */
-    public function setStyle(Style $style = null)
-    {
-        $this->style = $style;
-
-        return $this;
-    }
-
-    /**
-     * Render cell
-     *
-     * @param  int $size
      * @return string
      */
-    public function render($size = 10)
-    {
-        return (string) $this->style->pad($size)->setText(substr($this->text, 0, $size));
-    }
-
-    /**
-     * Render cell.
-     *
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->render();
     }
