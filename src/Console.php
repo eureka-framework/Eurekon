@@ -32,21 +32,21 @@ class Console
     /** @var Argument\Argument $argument Argument object */
     protected $argument = null;
 
-    /** @var \Psr\Container\ContainerInterface */
+    /** @var ContainerInterface */
     protected $container = null;
 
     /** @var int $exitCode Exit code script. */
     protected $exitCode = 0;
 
-    /** @var string $baseNamespace Base namespace for scripts class to execute. */
-    protected $baseNamespace = '\\';
+    /** @var array $baseNamespaces Base namespaces for scripts class to execute. */
+    protected $baseNamespaces = ['Eureka\Component'];
 
     /**
      * Class constructor.
      *
      * @param array $args List of arguments for current script to execute.
-     * @param \Psr\Container\ContainerInterface $container
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param ContainerInterface $container
+     * @param LoggerInterface $logger
      */
     public function __construct(array $args, ContainerInterface $container = null, LoggerInterface $logger = null)
     {
@@ -59,7 +59,7 @@ class Console
     }
 
     /**
-     * @return \Psr\Container\ContainerInterface
+     * @return ContainerInterface
      */
     public function getContainer()
     {
@@ -67,14 +67,16 @@ class Console
     }
 
     /**
-     * Set base namespace.
+     * Set base namespaces.
      *
-     * @param  string $baseNamespace
+     * @param  array $baseNamespaces
      * @return $this
      */
-    public function setBaseNamespace($baseNamespace)
+    public function setBaseNamespaces(array $baseNamespaces = [])
     {
-        $this->baseNamespace = trim($baseNamespace, '\\');
+        foreach ($baseNamespaces as $baseNamespace) {
+            $this->baseNamespaces[] = trim($baseNamespace, '\\');
+        }
 
         return $this;
     }
@@ -168,11 +170,22 @@ class Console
 
             // ~ Create new object '*'
             $scriptName  = str_replace('/', '\\', $name);
-            $className = '\\' . trim($this->baseNamespace . '\\' . $scriptName, '\\');
 
-            if (!class_exists($className)) {
-                throw new \RuntimeException('Current script class does not exists (class: "' . $className . '") !');
+            $classFound = false;
+            $className  = '';
+            foreach ($this->baseNamespaces as $baseNamespace) {
+                $className = '\\' . trim($baseNamespace . '\\' . $scriptName, '\\');
+
+                if (class_exists($className)) {
+                    $classFound = true;
+                    break;
+                }
             }
+
+            if (!$classFound) {
+                throw new \RuntimeException('Current script class does not exists (script: "' . $scriptName . '") !');
+            }
+
             $script = $this->getScriptInstance($className);
             $script->setContainer($this->getContainer());
 
