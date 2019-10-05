@@ -44,6 +44,20 @@ class Argument
     }
 
     /**
+     * Add specified argument value.
+     *
+     * @param  string $argument Argument name
+     * @param  mixed|null $value Value
+     * @return mixed
+     */
+    public function add($argument, $value): self
+    {
+        $this->arguments[$argument] = $value;
+
+        return $this;
+    }
+
+    /**
      * Get specified argument value.
      *
      * @param  string $argument Argument name
@@ -85,12 +99,10 @@ class Argument
     {
         if (isset($this->arguments[$argument])) {
             return true;
+        } elseif (!empty($alias) && isset($this->arguments[$alias])) {
+            return true;
         } else {
-            if (!empty($alias) && isset($this->arguments[$alias])) {
-                return true;
-            } else {
-                return false;
-            }
+            return false;
         }
     }
 

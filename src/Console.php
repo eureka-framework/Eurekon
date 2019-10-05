@@ -192,6 +192,7 @@ class Console
             $style = new Style\Style();
             $style->setText(' *** RUN - ' . $scriptName . ' - ' . date('Y-m-d H:i:s') . ' ***');
             $style->color('fg', Style\Color::GREEN);
+
             if ($this->argument->has('help')) {
                 IO\Out::std($style->get());
 
@@ -202,7 +203,9 @@ class Console
                 $script->before();
 
                 // ~ Display header script only after execution of before method (prevent error with start_session() for example).
-                IO\Out::std($style->get());
+                if (!$this->argument->has('script-no-header')) {
+                    IO\Out::std($style->get());
+                }
 
                 $beforeHasBeenRun = true;
 
@@ -271,7 +274,9 @@ class Console
         $style = new Style\Style(' *** END SCRIPT - Time taken: ' . round($this->time, 2) . 's - ' . date('Y-m-d H:i:s') . ' ***');
         $style->color('fg', Style\Color::GREEN);
 
-        IO\Out::std($style->get());
+        if (!$this->argument->has('script-no-header')) {
+            IO\Out::std($style->get());
+        }
     }
 
     /**
