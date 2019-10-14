@@ -250,7 +250,7 @@ class Console
     protected function getScriptInstance($className)
     {
         try {
-            $script = $this->getContainer()->get(strtr($className, '/', '\\'));
+            $script = $this->getContainer()->get(ltrim(strtr($className, '/', '\\'), '\\'));
         } catch (\Exception $exception) {
             $script = new $className();
         }
