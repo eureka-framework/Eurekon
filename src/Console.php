@@ -169,7 +169,7 @@ class Console
             }
 
             // ~ Create new object '*'
-            $scriptName  = str_replace('/', '\\', $name);
+            $scriptName  = str_replace('/', '\\', ucwords($name, '/\\'));
 
             $classFound = false;
             $className  = '';
@@ -249,7 +249,11 @@ class Console
      */
     protected function getScriptInstance($className)
     {
-        $script = new $className();
+        try {
+            $script = $this->getContainer()->get(strtr($className, '/', '\\'));
+        } catch (\Exception $exception) {
+            $script = new $className();
+        }
 
         if (!($script instanceof ScriptInterface)) {
             throw new \LogicException('Current script must implement ScriptInterface interface !');
