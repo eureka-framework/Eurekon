@@ -10,9 +10,9 @@
 namespace Eureka\Eurekon\Progress;
 
 use Eureka\Eurekon\Argument;
+use Eureka\Eurekon\Style\Color;
 use Eureka\Eurekon\Style\Style;
 use Eureka\Eurekon\IO\Out;
-
 
 /**
  * Display progression with percent & time.
@@ -79,7 +79,7 @@ class Progress
 
         $this->percentStep = 100 / $nbElements;
         $this->globalName  = (string) (new Style($globalName))->highlightForeground();
-        $this->active      = Argument::getInstance()->has('progress');
+        $this->active      = Argument\Argument::getInstance()->has('progress');
         $this->capped      = (bool) $capped;
     }
 
@@ -160,7 +160,7 @@ class Progress
     private function displayBar($label, $percent)
     {
         $bar = ' [' . str_pad(str_repeat('#', floor($percent / 2)), 50, ' ') . '] ' . str_pad($label, 50, ' ');
-        Out::std((string) (new Style())->color('fg', Style::COLOR_GREEN)->bold()->setText($bar), "\r");
+        Out::std((string) (new Style())->color('fg', Color::GREEN)->bold()->setText($bar), "\r");
     }
 
     /**
@@ -173,7 +173,7 @@ class Progress
     private function displayPercent($label, $percentExact)
     {
         $bar = ' [' . str_pad(number_format($percentExact, 2, '.', ' '), 6, ' ', STR_PAD_LEFT) . '%] ' . str_pad($label, 50, ' ');
-        Out::std((string) (new Style())->color('fg', Style::COLOR_GREEN)->bold()->setText($bar), "\r");
+        Out::std((string) (new Style())->color('fg', Color::GREEN)->bold()->setText($bar), "\r");
     }
 
     /**
@@ -193,19 +193,19 @@ class Progress
         }
 
         $style       = new Style(str_pad($percent, 3, ' ', STR_PAD_LEFT) . '%');
-        $percentText = (string) $style->color('fg', Style::COLOR_GREEN)->highlight('fg');
+        $percentText = (string) $style->color('fg', Color::GREEN)->highlight('fg');
 
         $timeDoneText = '';
         $timeLeftText = '';
         if ($this->elapsedTime != 0) {
             $timeDoneText = (string) $style->reset()
                 ->setText(str_pad($this->elapsedTime, 5, ' ', STR_PAD_LEFT))
-                ->color('fg', Style::COLOR_GREEN)
+                ->color('fg', Color::GREEN)
                 ->highlight('fg');
             $timeLeft     = round((($this->elapsedTime * 100) / $percentExact), 0) - $this->elapsedTime;
             $timeLeftText = (string) $style->reset()
                 ->setText(str_pad($timeLeft, 5, ' ', STR_PAD_LEFT))
-                ->color('fg', Style::COLOR_GREEN)
+                ->color('fg', Color::GREEN)
                 ->highlight('fg');
         }
 
@@ -228,7 +228,7 @@ class Progress
 
         $percent     = floor($this->currentIndex * $this->percentStep);
         $style       = new Style(str_pad($percent, 3, ' ', STR_PAD_LEFT) . '%');
-        $percentText = (string) $style->color('fg', Style::COLOR_GREEN)->highlight('fg');
+        $percentText = (string) $style->color('fg', Color::GREEN)->highlight('fg');
 
         $this->completed = true;
         Out::std('  > ' . $this->globalName . ' - [' . $percentText . '] - ' . str_pad('stopped !', 80));
