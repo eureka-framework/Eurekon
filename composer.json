@@ -14,8 +14,13 @@
 
   "autoload": {
     "psr-4": {
-      "Eureka\\Eurekon\\": "./"
+      "Eureka\\Eurekon\\": "./src"
     }
+  },
+
+  "require": {
+    "psr/container": "^1.0",
+    "psr/log": "^1.1.0"
   }
 
 }
